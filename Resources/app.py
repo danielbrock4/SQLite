@@ -13,16 +13,17 @@ from flask import Flask, jsonify
 
     # Set Up the Database
         # Access Database with create_engine() function allows us to access and query our SQLite database file.
-engine = create_engine('sqlite:///hawaii.sqlite')     
+engine = create_engine("sqlite:///hawaii.sqlite")     
         # Reflect Database Tables using Python function
-Base = automap_base()
+Base = automap_base() 
 Base.prepare(engine, reflect=True)
         # With the database reflected, we can save our references to each table.
         # Create a variable for each of the classes so that we can reference them later
 Measurement = Base.classes.measurement
 Station = Base.classes.station
         # Create a session link from Python to our database
-session = Session(engine)
+        # IMPORTANT - Per instructer, master session will not work in defined functions. Must be defined within the function instead
+# session = Session(engine)
 
     # Set Up Flask
         # To define our Flask app we will create a Flask application called "app."
@@ -56,9 +57,11 @@ def welcome():
 @app.route("/api/v1.0/precipitation")
 def precipitation():
    prev_year = dt.date(2017, 8, 23) - dt.timedelta(days=365)
+   session = Session(engine)
    precipitation = session.query(Measurement.date, Measurement.prcp).\
     filter(Measurement.date >= prev_year).all()
    precip = {date: prcp for date, prcp in precipitation}
+   session.close()
    return jsonify(precip)
 
 #  Stations Route
@@ -71,7 +74,9 @@ def precipitation():
         # You may notice here that to return our list as JSON, we need to add stations=stations. This formats our list into JSON        
 @app.route("/api/v1.0/stations")
 def stations():
+    session = Session(engine)
     results = session.query(Station.station).all()
+    session.close()
     stations = list(np.ravel(results))
     return jsonify(stations=stations)
 
@@ -84,32 +89,50 @@ def stations():
     # Step 6: Convert our unraveled results into a list. To convert the results to a list, we will need to use the list function, which is list(), and then convert that array into a list. 
     # Step 7: jsonify the list and return it as JSON
         # You may notice here that to return our list as JSON, we need to add temps=temps. This formats our list into JSON
+@app.route("/api/v1.0/tobs")
 def temp_monthly():
     prev_year = dt.date(2017, 8, 23) - dt.timedelta(days=365)
+    session = Session(engine)
     results = session.query(Measurement.tobs).\
-        filter(Measurement.station == 'USC00519281').\
-        filter(Measurement.date >= prev_year).all()
+     filter(Measurement.station == 'USC00519281').\
+     filter(Measurement.date >= prev_year).all()
+    session.close()
     temps = list(np.ravel(results))    
     return jsonify(temps=temps)
 
 
  #Statistics Route
-    # Step 1: Create the routes to provide oth a starting and ending date
+    # Step 1: Create the two routes to provide a starting and ending date
     # Step 2: Create a function called stats()
         # Step 2a: Add parameters to our stats()function: a start parameter and an end parameter. For now, set them both to None
     # Step 3: Create a list called sel to select the minimum, average, and maximum temperatures from our SQLite database
     # Step 4: Determine the starting and ending date by adding an if-not statement to our code
-        # Step 4a. Query our database
-        # Step 4b: Unravel the results into a one-dimensional array and convert them to a list     
-    # Step 5: 
+        # Step 4a. Query our database using the list we just made
+            # Take note of the asterisk in the query next to the sel list. This is used to indicate there will be multiple results for our query: minimum, average, and maximum temperatures.
+        # Step 4b: Unravel the results into a one-dimensional array and convert them to a list
+        # Step 4c: jsonify our results and return them
+            # You may notice here that to return our list as JSON, we need to add temps=temps. This formats our list into JSON     
+    # Step 5: Calculate the temperature minimum, average, and maximum with the start and end dates 
     # Step 6: 
     # Step 7: 
 @app.route("/api/v1.0/temp/<start>")
 @app.route("/api/v1.0/temp/<start>/<end>")
-def stats(start=none, end=none):
+def stats(start=None, end=None):
     sel = [func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)]
+    
+    
     if not end:
+        session = Session(engine)  
         results = session.query(*sel).\
-            filter(Measurement.date >= start).all()
+         filter(Measurement.date >= start).all() # Here the asterisk is used to indicate there will be multiple results for our query: minimum, average, and maximum temperatures.
+        session.close()    
         temps = list(np.ravel(results))
         return jsonify(temps=temps)
+    
+    session = Session(engine)
+    results = session.query(*sel).\
+     filter(Measurement.date >= start).\
+     filter(Measurement.date <= end).all()
+    session.close()
+    temps = list(np.ravel(results))
+    return jsonify(temps=temps)

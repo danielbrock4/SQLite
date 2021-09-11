@@ -3,7 +3,8 @@ Using tools such as SQLAlchemy, Python, and JupyterLab, I connected to and queri
 
 ## Resources
 
-- **Data Sources:** Hawaii SQLite Database [hawaii.sqlite](Resources/hawaii.sqlite)
+- **Data Sources:** 
+  - Hawaii SQLite Database [hawaii.sqlite](Resources/hawaii.sqlite)
 - **Software:** Tableau, Python, Pandas, JupyterLab
 
 ## Challenge Project Overview 

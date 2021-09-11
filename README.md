@@ -3,8 +3,7 @@ Using tools such as SQLAlchemy, Python, and JupyterLab, I connected to and queri
 
 ## Resources
 
-- **Data Sources:** 
-  - From CitiBike Website: [201908-citibike-tripdata.csv](https://s3.amazonaws.com/tripdata/index.html)
+- **Data Sources:** Hawaii SQLite Database [hawaii.sqlite](Resources/hawaii.sqlite)
 - **Software:** Tableau, Python, Pandas, JupyterLab
 
 ## Challenge Project Overview 

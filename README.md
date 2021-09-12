@@ -9,6 +9,8 @@
 
 Using tools such as SQLAlchemy, Python, and JupyterLab, I connected to and queried an SQLite database. Then I wrote and executed Python code using Numpy, Matplotlib, and Pandas to view statistics like minimum, maximum, and averages to analyze and visualize the data about weather. Finally, I built a basic Flask app to view the JSONified data. With this data, we could locate an ideal surf shop location. Maybe in Hawaii???
 
+### How to View the Flask App
+
 To view the basic Flask app data, navigate to the folder where app.py and hawaii.sqlite is found. Open a terminal and type "run flask." You then will go to http://127.0.0.5000/ to view the results.
 
 ## Challange Project Analysis
